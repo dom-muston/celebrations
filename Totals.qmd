@@ -1,0 +1,218 @@
+---
+title: "What's in a Celebrations Box?"
+format:
+    html:
+        code-fold: true
+        code-tools: true
+execute:
+    echo: true
+    warning: false
+    error: false
+---
+
+## Introduction and Objective
+
+Each year since 2015, Chris Salmon does the world great service by counting and recording the contents of a box of Celebrations chocolates. As illustrated below, Chris's data shows a substantial decline in the number of chocolates observed in each box over the years from the heady heights of 2016 (84) to this year's all-time low (54). This page provides analysis of trends on the total numbers of chocolates in each box over time. Various statistical models of Poisson regression (Linear, Quadratic, and Joinpoint)[1] are fitted with the aim of understanding and predicting trends in the total number of chocolates in a Celebrations box over time. Some models allow a direct estimation of shrinkflation.[2] We do not consider changes in the variety of individual chocolates (Mars, Bounty etc) in the package, nor the size or ingredients in the chocolates.
+
+```{r set-up}
+# Use essential data analysis/graphics packages
+library(dplyr)
+library(ggplot2)
+
+# Data provided by Chris Salmon
+ds <- tibble(
+    years = 2015:2025,
+    chocs = c(82,84,76,72,72,71,72,73,65,61,54)
+  )
+
+# Plot of observed number of chocolates vs time
+ggplot(ds, aes(x=years, y=chocs)) +
+  geom_point() +
+  geom_text(aes(label = chocs), vjust = -0.5, size = 3) +
+  scale_x_continuous(breaks = c(2015, 2020, 2025), name = "Year") +
+  scale_y_continuous(limits = c(0, 100), name = "Number of chocolates")
+```
+
+## Analysis
+
+### Null model
+
+The null model is used as a benchmark for models of more interest. It includes a single coefficient, $\beta_0$.
+
+$$
+Chocolates \sim Poisson(\lambda)
+$$ $$
+\log(\lambda) = \beta_0
+$$
+
+```{r null}
+# Null model
+mod_null <- glm(chocs~1, family=poisson, data=ds)
+```
+
+The fitted number of chocolates in a box is a constant `r round(exp(mod_null$coefficients), 1)` under the null model, which is unlikely a plausible model given the sad decline observed over time.
+
+### Linear model
+
+The linear model introduces a covariate for the year of observation, which we centre around 2020.
+
+$$
+\log(\lambda) = \beta_0 + \beta_1 (Year - 2020)
+$$
+
+Shrinkflation is estimated directly as $e^{\lambda_1} - 1$.
+
+```{r linear}
+# Centre the years variable around 2020
+ds$cyears1 <- ds$years - 2020
+
+# Fit Poisson model
+mod_year1 <- glm(chocs ~ cyears1, family=poisson, data=ds)
+
+# P-value for improvement in model fit
+anova_1_null <- anova(mod_year1, mod_null)
+p_1_null <- anova_1_null$`Pr(>Chi)`[2]
+
+# Best and worst years
+best_year1 <- which.max(mod_year1$residuals)[1]+2014
+worst_year1 <- which.min(mod_year1$residuals)[1]+2014
+```
+
+Using only one variable, we have reduced the model deviance substantially (from `r round(mod_year1$null.deviance, 1)` to `r round(mod_year1$deviance, 1)`). This is clearly a statistically signifiant improvement on model fit (P = `r p_1_null`).
+
+Under this model:
+
+- Shrinkflation is estimated as `r round(-100*(exp(as.numeric(mod_year1$coefficients[2]))-1), 1)` percent per year.
+- The expected number of chocolates per box reduced from `r round(mod_year1$fitted.values[1], 1)` in 2015 to `r round(mod_year1$fitted.values[11], 1)` by 2025
+- Chris was most fortunate in `r best_year1` when he observed `r round(as.numeric(ds$chocs[best_year1-2014]), 1)` but should have expected `r round(as.numeric(mod_year1$fitted.values[best_year1-2014]), 1)`
+- But he was most unfortunate in `r worst_year1` when he observed `r round(as.numeric(ds$chocs[worst_year1-2014]), 1)` but should have expected `r round(as.numeric(mod_year1$fitted.values[worst_year1-2014]), 1)`
+
+### Quadratic model
+
+The quadratic model introduces a covariate for the square of the (centered) year of observation. There is no longer a single estimate of shrinkflation, as this may change over time due to $\beta_2$.
+
+$$
+\log(\lambda) = \beta_0 + \beta_1 (Year - 2020) + \beta_2 (Year - 2020)^2
+$$
+
+```{r quad}
+# Quadratic centered year term
+ds$cyears2 <- ds$cyears1^2
+
+# Fit Poisson model
+mod_year2 <- glm(chocs ~ cyears1 + cyears2, family=poisson, data=ds)
+
+# P-value for improvement in model fit
+anova_2_1 <- anova(mod_year2, mod_year1)
+p_2_1 <- anova_2_1$`Pr(>Chi)`[2]
+
+# Best and worst years
+best_year2 <- which.max(mod_year2$residuals)[1]+2014
+worst_year2 <- which.max(mod_year2$residuals)[1]+2014
+```
+
+We have reduced the model deviance again (from `r round(mod_year1$deviance, 1)` to `r round(mod_year2$deviance, 1)`), but this is not statistically signifiant (P = `r round(p_2_1, 2)`) given the use of one additional parameter.
+
+### Joinpoint / segmented model
+
+A joinpoint or segmented model tests the idea that the trend in shrinkflation changed at some single point in time. The model estimates the timing of this joinpoint, and reveals the shrinkflation before and after this point.[3, 4] Since we have only 11 datapoints, we will model the presence of just one joinpoint, at time $J$.
+
+$$
+\begin{equation}
+\log(\lambda) =
+    \begin{cases}
+        \beta_0 + \beta_1(Year - 2020), & \text{if } Year < J \\\\
+        \beta_0 + (\beta_1 + \beta_2) (Year - 2020), & \text{otherwise}
+    \end{cases}
+\end{equation}
+$$
+
+```{r segement}
+library(segmented)
+
+# Fit segmented Poisson regression on time
+# psi is an initial guess for the joinpoint (e.g., median time)
+mod_seg <- segmented(mod_year1,
+                     seg.Z = ~ cyears1,
+                     psi   = median(ds$cyears1))
+
+# P-value for improvement in model fit
+anova_seg_1 <- anova(mod_seg, mod_year1)
+p_seg_1 <- anova_seg_1$`Pr(>Chi)`[2]
+```
+
+Compared to the linear model, we have reduced the model deviance again (from `r round(mod_year1$deviance, 1)` to `r round(mod_seg$deviance, 1)`), but this is also not statistically signifiant (P = `r round(p_seg_1, 2)`) given the use of two additional parameters.
+
+## Predictions
+
+The best-fitting and most efficient model was found to be the Linear model.
+
+```{r glin}
+# Pull predictions into a dataset
+pred <- tibble(
+    years = 2015:2035,
+    act = c(ds$chocs, rep(NA, 10))
+  ) |>
+  mutate(
+    # Time covariates
+    cyears1 = years - 2020,
+    cyears2 = cyears1 ^ 2,
+    jyears1 = pmax(0, cyears1 - mod_seg$psi[2]),
+    # Model predictions
+    null = exp(coef(mod_null)),
+    const = exp(coef(mod_year1)[1] + cyears1 * coef(mod_year1)[2]),
+    accel = exp(coef(mod_year2)[1] + cyears1 * coef(mod_year2)[2] + cyears2 * coef(mod_year2)[3]),
+    seg = exp(coef(mod_seg)[1] + cyears1 * coef(mod_seg)[2] + jyears1 * coef(mod_seg)[3])
+  )
+
+# Color scale
+colors <- c("Observed" = "black", "Linear" = "darkred", "Quadratic" = "darkgreen", "Joinpoint" = "blue")
+ncolors <- names(colors)
+
+# Graphic with just linear model
+ggplot(pred, aes(x=years)) +
+  geom_point(aes(y=act, color=ncolors[1])) +
+  geom_line(aes(y=const, color=ncolors[2]), linetype="solid") +
+  labs(
+    title = "The Linear model was best-fitting (shrinkflation of 3.3% per year)",
+    color = "Legend"
+  ) +
+  scale_color_manual(name = "", values = colors, breaks = ncolors) +
+  scale_x_continuous(limits = c(2015, 2035), name = "Year") +
+  scale_y_continuous(limits = c(0, 100), name = "Number of Celebrations in a box")
+```
+
+However, we can also take a peak at the other models. The Quadratic and Joinpoint models were not the best fitting or most efficent so have dashed rather than solid lines. The predictions of Celebrations per box are markedly lower under these models.
+
+```{r gall}
+ggplot(pred, aes(x=years)) +
+  geom_point(aes(y=act, color=ncolors[1])) +
+  geom_line(aes(y=const, color=ncolors[2]), linetype="solid") +
+  geom_line(aes(y=accel, color=ncolors[3]), linetype="dashed") +
+  geom_line(aes(y=seg, color=ncolors[4]), linetype="dashed") +
+  labs(
+    title = "All models",
+    color = "Legend"
+  ) +
+  scale_color_manual(name = "", values = colors, breaks = ncolors) +
+  scale_x_continuous(limits = c(2015, 2035), name = "Year") +
+  scale_y_continuous(limits = c(0, 100), name = "Number of Celebrations in a box")
+```
+
+## Discussion
+
+- We fitted a range of statistical models to explain and predict the number of Celebrations chocolates in a box.
+- The best-fitting statistical model was the Linear model, in which shrinkflation was estimated as 3.3% per year.
+- There was limited data (only one box per year) and more sophisticated models did not provide statistically signficant improvements to model fit.
+- However, both the Quadratic and Joinpoint models provided predictions that were substantially lower than the Linear model.
+
+
+## References
+
+1. Wikipedia. Poisson regression. https://en.wikipedia.org/wiki/Poisson_regression
+2. Wikipedia. Shrinkflation. https://en.wikipedia.org/wiki/Shrinkflation
+3. Muggeo VMR (2003). Estimating regression models with unknown break-points. Statistics in Medicine, 22, 3055-3071.
+4. Muggeo VMR (2008). segmented: an R Package to Fit Regression Models with Broken-Line Relationships. R News, 8/1, 20-25.
+
+
+
