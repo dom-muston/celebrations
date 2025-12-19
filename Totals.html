@@ -202,13 +202,16 @@ window.Quarto = {
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Best and worst years</span></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>best_year1 <span class="ot">&lt;-</span> <span class="fu">which.max</span>(mod_year1<span class="sc">$</span>residuals)[<span class="dv">1</span>]<span class="sc">+</span><span class="dv">2014</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>worst_year1 <span class="ot">&lt;-</span> <span class="fu">which.min</span>(mod_year1<span class="sc">$</span>residuals)[<span class="dv">1</span>]<span class="sc">+</span><span class="dv">2014</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>worst_year1 <span class="ot">&lt;-</span> <span class="fu">which.min</span>(mod_year1<span class="sc">$</span>residuals)[<span class="dv">1</span>]<span class="sc">+</span><span class="dv">2014</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Shrinkflation</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>shrink_year1 <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">100</span> <span class="sc">*</span> (<span class="fu">exp</span>(<span class="fu">as.numeric</span>(mod_year1<span class="sc">$</span>coefficients[<span class="dv">2</span>]))<span class="sc">-</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Using only one variable, we have reduced the model deviance substantially (from 10.8 to 1.9). This is clearly a statistically signifiant improvement on model fit (P = 0.0029223).</p>
 <p>Under this model:</p>
 <ul>
-<li>Shrinkflation is estimated as 3.3 percent per year.</li>
+<li>Shrinkflation is estimated as 3.3% per year.</li>
 <li>The expected number of chocolates per box reduced from 83.7 in 2015 to 59.7 by 2025</li>
 <li>Chris was most fortunate in 2022 when he observed 73 but should have expected 66.1</li>
 <li>But he was most unfortunate in 2025 when he observed 54 but should have expected 59.7</li>
@@ -243,7 +246,7 @@ window.Quarto = {
 \begin{equation}
 \log(\lambda) =
     \begin{cases}
-        \beta_0 + \beta_1(Year - 2020), &amp; \text{if } Year &lt; J \\\\
+        \beta_0 + \beta_1(Year - 2020), &amp; \text{if } Year - 2020 &lt; J \\\\
         \beta_0 + \beta_1(Year - 2020) + \beta_2(Year - 2020 - J), &amp; \text{otherwise}
     \end{cases}
 \end{equation}
@@ -261,10 +264,15 @@ window.Quarto = {
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co"># P-value for improvement in model fit</span></span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>anova_seg_1 <span class="ot">&lt;-</span> <span class="fu">anova</span>(mod_seg, mod_year1)</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>p_seg_1 <span class="ot">&lt;-</span> anova_seg_1<span class="sc">$</span><span class="st">`</span><span class="at">Pr(&gt;Chi)</span><span class="st">`</span>[<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>p_seg_1 <span class="ot">&lt;-</span> anova_seg_1<span class="sc">$</span><span class="st">`</span><span class="at">Pr(&gt;Chi)</span><span class="st">`</span>[<span class="dv">2</span>]</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Interpretation</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>seg_infl1 <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">100</span> <span class="sc">*</span> (<span class="fu">exp</span>(<span class="fu">coefficients</span>(mod_seg)[<span class="dv">2</span>]) <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>seg_infl2 <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">100</span> <span class="sc">*</span> (<span class="fu">exp</span>(<span class="fu">coefficients</span>(mod_seg)[<span class="dv">2</span>] <span class="sc">+</span> <span class="fu">coefficients</span>(mod_seg)[<span class="dv">3</span>]) <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>mod_seg_change <span class="ot">&lt;-</span> mod_seg<span class="sc">$</span>psi[<span class="dv">2</span>]<span class="sc">+</span><span class="dv">2020</span> <span class="co"># is mid 2022</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>Compared to the linear model, we have reduced the model deviance again (from 1.9 to 0.8), but this is also not statistically signifiant (P = 0.59) given the use of two additional parameters.</p>
+<p>Compared to the linear model, we have reduced the model deviance again (from 1.9 to 0.8). It implies that shrinkflation increased from 2.2% per year before mid-2023 to 8.8% per year after that point. However this model does not provide statistically significant improvement in fit (P = 0.59) given the use of two additional parameters.</p>
 </section>
 </section>
 <section id="predictions" class="level2">
@@ -299,7 +307,7 @@ window.Quarto = {
 <span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y=</span>act, <span class="at">color=</span>ncolors[<span class="dv">1</span>])) <span class="sc">+</span></span>
 <span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y=</span>const, <span class="at">color=</span>ncolors[<span class="dv">2</span>]), <span class="at">linetype=</span><span class="st">"solid"</span>) <span class="sc">+</span></span>
 <span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"The Linear model was best-fitting (shrinkflation of 3.3% per year)"</span>,</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">"The Linear model was best-fitting (shrinkflation of "</span>, <span class="fu">round</span>(shrink_year1, <span class="dv">1</span>), <span class="st">"% per year)"</span>),</span>
 <span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Legend"</span></span>
 <span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
 <span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">name =</span> <span class="st">""</span>, <span class="at">values =</span> colors, <span class="at">breaks =</span> ncolors) <span class="sc">+</span></span>
@@ -342,7 +350,7 @@ window.Quarto = {
 </section>
 <section id="what-about-next-year" class="level2">
 <h2 class="anchored" data-anchor-id="what-about-next-year">What about next year?</h2>
-<p>Now that we have estimated these models, we can make predictions for the number of chocolates Chris will observe in next year’s box. Unfortunately, there still seems a lot of uncertainty in each model, and between models.</p>
+<p>Now that we have estimated these models, we can make predictions for the number of chocolates Chris will observe in next year’s box. Unfortunately, there still seems a lot of uncertainty in each model, and between models. The number of chocolates in a box is probably unlikely to be a genuine Poisson process, due to quality control around the allowable range of chocolates in a box, so the precision in the statistical models that ignore this may be understated.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -404,8 +412,12 @@ window.Quarto = {
 <ul>
 <li>We fitted a range of statistical models to explain and predict the number of Celebrations chocolates in a box.</li>
 <li>The best-fitting statistical model was the Linear model, in which shrinkflation was estimated as 3.3% per year.</li>
-<li>There was limited data (only one box per year) and more sophisticated models did not provide statistically signficant improvements to model fit.</li>
-<li>Both the Quadratic and Joinpoint models provided predictions that were substantially lower than the Linear model.</li>
+<li>There was limited data (only one box per year) and more sophisticated models did not provide statistically signficant improvements to model fit.
+<ul>
+<li>The Joinpoint model implies that the rate of shrinkflation quadrupled since mid-2023, from 2.2% to 8.8% per year. This would be shocking, but hopefully just a chance finding (P=0.59).</li>
+<li>This is also not really a Poisson process due to likely quality control constraints on the range of chocolates allowed in any box.</li>
+</ul></li>
+<li>Nevertheless, both the Quadratic and Joinpoint models provided predictions that were substantially lower than the Linear model.</li>
 <li>Unfortunately we can’t make very precise predictions of next year’s count.</li>
 </ul>
 </section>
@@ -953,192 +965,201 @@ window.Quarto = {
 <span id="cb9-78"><a href="#cb9-78" aria-hidden="true" tabindex="-1"></a><span class="co"># Best and worst years</span></span>
 <span id="cb9-79"><a href="#cb9-79" aria-hidden="true" tabindex="-1"></a>best_year1 <span class="ot">&lt;-</span> <span class="fu">which.max</span>(mod_year1<span class="sc">$</span>residuals)[<span class="dv">1</span>]<span class="sc">+</span><span class="dv">2014</span></span>
 <span id="cb9-80"><a href="#cb9-80" aria-hidden="true" tabindex="-1"></a>worst_year1 <span class="ot">&lt;-</span> <span class="fu">which.min</span>(mod_year1<span class="sc">$</span>residuals)[<span class="dv">1</span>]<span class="sc">+</span><span class="dv">2014</span></span>
-<span id="cb9-81"><a href="#cb9-81" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-82"><a href="#cb9-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-83"><a href="#cb9-83" aria-hidden="true" tabindex="-1"></a>Using only one variable, we have reduced the model deviance substantially (from <span class="in">`r round(mod_year1$null.deviance, 1)`</span> to <span class="in">`r round(mod_year1$deviance, 1)`</span>). This is clearly a statistically signifiant improvement on model fit (P = <span class="in">`r p_1_null`</span>).</span>
-<span id="cb9-84"><a href="#cb9-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-85"><a href="#cb9-85" aria-hidden="true" tabindex="-1"></a>Under this model:</span>
-<span id="cb9-86"><a href="#cb9-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-87"><a href="#cb9-87" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Shrinkflation is estimated as <span class="in">`r round(-100*(exp(as.numeric(mod_year1$coefficients[2]))-1), 1)`</span> percent per year.</span>
-<span id="cb9-88"><a href="#cb9-88" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The expected number of chocolates per box reduced from <span class="in">`r round(mod_year1$fitted.values[1], 1)`</span> in 2015 to <span class="in">`r round(mod_year1$fitted.values[11], 1)`</span> by 2025</span>
-<span id="cb9-89"><a href="#cb9-89" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Chris was most fortunate in <span class="in">`r best_year1`</span> when he observed <span class="in">`r round(as.numeric(ds$chocs[best_year1-2014]), 1)`</span> but should have expected <span class="in">`r round(as.numeric(mod_year1$fitted.values[best_year1-2014]), 1)`</span></span>
-<span id="cb9-90"><a href="#cb9-90" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>But he was most unfortunate in <span class="in">`r worst_year1`</span> when he observed <span class="in">`r round(as.numeric(ds$chocs[worst_year1-2014]), 1)`</span> but should have expected <span class="in">`r round(as.numeric(mod_year1$fitted.values[worst_year1-2014]), 1)`</span></span>
-<span id="cb9-91"><a href="#cb9-91" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-92"><a href="#cb9-92" aria-hidden="true" tabindex="-1"></a><span class="fu">### Quadratic model</span></span>
-<span id="cb9-93"><a href="#cb9-93" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-94"><a href="#cb9-94" aria-hidden="true" tabindex="-1"></a>The quadratic model introduces a covariate for the square of the (centered) year of observation. There is no longer a single estimate of shrinkflation, as this may change over time due to $\beta_2$.</span>
-<span id="cb9-95"><a href="#cb9-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-96"><a href="#cb9-96" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb9-97"><a href="#cb9-97" aria-hidden="true" tabindex="-1"></a>\log(\lambda) = \beta_0 + \beta_1 (Year - 2020) + \beta_2 (Year - 2020)^2</span>
-<span id="cb9-98"><a href="#cb9-98" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb9-99"><a href="#cb9-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-100"><a href="#cb9-100" aria-hidden="true" tabindex="-1"></a><span class="in">```{r quad}</span></span>
-<span id="cb9-101"><a href="#cb9-101" aria-hidden="true" tabindex="-1"></a><span class="co"># Quadratic centered year term</span></span>
-<span id="cb9-102"><a href="#cb9-102" aria-hidden="true" tabindex="-1"></a>ds<span class="sc">$</span>cyears2 <span class="ot">&lt;-</span> ds<span class="sc">$</span>cyears1<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb9-103"><a href="#cb9-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-104"><a href="#cb9-104" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit Poisson model</span></span>
-<span id="cb9-105"><a href="#cb9-105" aria-hidden="true" tabindex="-1"></a>mod_year2 <span class="ot">&lt;-</span> <span class="fu">glm</span>(chocs <span class="sc">~</span> cyears1 <span class="sc">+</span> cyears2, <span class="at">family=</span>poisson, <span class="at">data=</span>ds)</span>
+<span id="cb9-81"><a href="#cb9-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-82"><a href="#cb9-82" aria-hidden="true" tabindex="-1"></a><span class="co"># Shrinkflation</span></span>
+<span id="cb9-83"><a href="#cb9-83" aria-hidden="true" tabindex="-1"></a>shrink_year1 <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">100</span> <span class="sc">*</span> (<span class="fu">exp</span>(<span class="fu">as.numeric</span>(mod_year1<span class="sc">$</span>coefficients[<span class="dv">2</span>]))<span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb9-84"><a href="#cb9-84" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-85"><a href="#cb9-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-86"><a href="#cb9-86" aria-hidden="true" tabindex="-1"></a>Using only one variable, we have reduced the model deviance substantially (from <span class="in">`r round(mod_year1$null.deviance, 1)`</span> to <span class="in">`r round(mod_year1$deviance, 1)`</span>). This is clearly a statistically signifiant improvement on model fit (P = <span class="in">`r p_1_null`</span>).</span>
+<span id="cb9-87"><a href="#cb9-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-88"><a href="#cb9-88" aria-hidden="true" tabindex="-1"></a>Under this model:</span>
+<span id="cb9-89"><a href="#cb9-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-90"><a href="#cb9-90" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Shrinkflation is estimated as <span class="in">`r round(shrink_year1, 1)`</span>% per year.</span>
+<span id="cb9-91"><a href="#cb9-91" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The expected number of chocolates per box reduced from <span class="in">`r round(mod_year1$fitted.values[1], 1)`</span> in 2015 to <span class="in">`r round(mod_year1$fitted.values[11], 1)`</span> by 2025</span>
+<span id="cb9-92"><a href="#cb9-92" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Chris was most fortunate in <span class="in">`r best_year1`</span> when he observed <span class="in">`r round(as.numeric(ds$chocs[best_year1-2014]), 1)`</span> but should have expected <span class="in">`r round(as.numeric(mod_year1$fitted.values[best_year1-2014]), 1)`</span></span>
+<span id="cb9-93"><a href="#cb9-93" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>But he was most unfortunate in <span class="in">`r worst_year1`</span> when he observed <span class="in">`r round(as.numeric(ds$chocs[worst_year1-2014]), 1)`</span> but should have expected <span class="in">`r round(as.numeric(mod_year1$fitted.values[worst_year1-2014]), 1)`</span></span>
+<span id="cb9-94"><a href="#cb9-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-95"><a href="#cb9-95" aria-hidden="true" tabindex="-1"></a><span class="fu">### Quadratic model</span></span>
+<span id="cb9-96"><a href="#cb9-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-97"><a href="#cb9-97" aria-hidden="true" tabindex="-1"></a>The quadratic model introduces a covariate for the square of the (centered) year of observation. There is no longer a single estimate of shrinkflation, as this may change over time due to $\beta_2$.</span>
+<span id="cb9-98"><a href="#cb9-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-99"><a href="#cb9-99" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb9-100"><a href="#cb9-100" aria-hidden="true" tabindex="-1"></a>\log(\lambda) = \beta_0 + \beta_1 (Year - 2020) + \beta_2 (Year - 2020)^2</span>
+<span id="cb9-101"><a href="#cb9-101" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb9-102"><a href="#cb9-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-103"><a href="#cb9-103" aria-hidden="true" tabindex="-1"></a><span class="in">```{r quad}</span></span>
+<span id="cb9-104"><a href="#cb9-104" aria-hidden="true" tabindex="-1"></a><span class="co"># Quadratic centered year term</span></span>
+<span id="cb9-105"><a href="#cb9-105" aria-hidden="true" tabindex="-1"></a>ds<span class="sc">$</span>cyears2 <span class="ot">&lt;-</span> ds<span class="sc">$</span>cyears1<span class="sc">^</span><span class="dv">2</span></span>
 <span id="cb9-106"><a href="#cb9-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-107"><a href="#cb9-107" aria-hidden="true" tabindex="-1"></a><span class="co"># P-value for improvement in model fit</span></span>
-<span id="cb9-108"><a href="#cb9-108" aria-hidden="true" tabindex="-1"></a>anova_2_1 <span class="ot">&lt;-</span> <span class="fu">anova</span>(mod_year2, mod_year1)</span>
-<span id="cb9-109"><a href="#cb9-109" aria-hidden="true" tabindex="-1"></a>p_2_1 <span class="ot">&lt;-</span> anova_2_1<span class="sc">$</span><span class="st">`</span><span class="at">Pr(&gt;Chi)</span><span class="st">`</span>[<span class="dv">2</span>]</span>
-<span id="cb9-110"><a href="#cb9-110" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-111"><a href="#cb9-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-112"><a href="#cb9-112" aria-hidden="true" tabindex="-1"></a>We have reduced the model deviance again (from <span class="in">`r round(mod_year1$deviance, 1)`</span> to <span class="in">`r round(mod_year2$deviance, 1)`</span>), but this is not statistically signifiant (P = <span class="in">`r round(p_2_1, 2)`</span>) given the use of one additional parameter.</span>
-<span id="cb9-113"><a href="#cb9-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-114"><a href="#cb9-114" aria-hidden="true" tabindex="-1"></a><span class="fu">### Joinpoint / segmented model</span></span>
-<span id="cb9-115"><a href="#cb9-115" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-116"><a href="#cb9-116" aria-hidden="true" tabindex="-1"></a>A joinpoint or segmented model tests the idea that the trend in shrinkflation changed at some single point in time. The model estimates the timing of this joinpoint, and reveals the shrinkflation before and after this point.<span class="co">[</span><span class="ot">3, 4</span><span class="co">]</span> Since we have only 11 datapoints, we will model the presence of just one joinpoint, at time $J$.</span>
-<span id="cb9-117"><a href="#cb9-117" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-118"><a href="#cb9-118" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb9-119"><a href="#cb9-119" aria-hidden="true" tabindex="-1"></a>\begin{equation}</span>
-<span id="cb9-120"><a href="#cb9-120" aria-hidden="true" tabindex="-1"></a>\log(\lambda) =</span>
-<span id="cb9-121"><a href="#cb9-121" aria-hidden="true" tabindex="-1"></a>    \begin{cases}</span>
-<span id="cb9-122"><a href="#cb9-122" aria-hidden="true" tabindex="-1"></a>        \beta_0 + \beta_1(Year - 2020), &amp; \text{if } Year &lt; J <span class="sc">\\\\</span></span>
-<span id="cb9-123"><a href="#cb9-123" aria-hidden="true" tabindex="-1"></a>        \beta_0 + \beta_1(Year - 2020) + \beta_2(Year - 2020 - J), &amp; \text{otherwise}</span>
-<span id="cb9-124"><a href="#cb9-124" aria-hidden="true" tabindex="-1"></a>    \end{cases}</span>
-<span id="cb9-125"><a href="#cb9-125" aria-hidden="true" tabindex="-1"></a>\end{equation}</span>
-<span id="cb9-126"><a href="#cb9-126" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb9-127"><a href="#cb9-127" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-128"><a href="#cb9-128" aria-hidden="true" tabindex="-1"></a><span class="in">```{r segement}</span></span>
-<span id="cb9-129"><a href="#cb9-129" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(segmented)</span>
+<span id="cb9-107"><a href="#cb9-107" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit Poisson model</span></span>
+<span id="cb9-108"><a href="#cb9-108" aria-hidden="true" tabindex="-1"></a>mod_year2 <span class="ot">&lt;-</span> <span class="fu">glm</span>(chocs <span class="sc">~</span> cyears1 <span class="sc">+</span> cyears2, <span class="at">family=</span>poisson, <span class="at">data=</span>ds)</span>
+<span id="cb9-109"><a href="#cb9-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-110"><a href="#cb9-110" aria-hidden="true" tabindex="-1"></a><span class="co"># P-value for improvement in model fit</span></span>
+<span id="cb9-111"><a href="#cb9-111" aria-hidden="true" tabindex="-1"></a>anova_2_1 <span class="ot">&lt;-</span> <span class="fu">anova</span>(mod_year2, mod_year1)</span>
+<span id="cb9-112"><a href="#cb9-112" aria-hidden="true" tabindex="-1"></a>p_2_1 <span class="ot">&lt;-</span> anova_2_1<span class="sc">$</span><span class="st">`</span><span class="at">Pr(&gt;Chi)</span><span class="st">`</span>[<span class="dv">2</span>]</span>
+<span id="cb9-113"><a href="#cb9-113" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-114"><a href="#cb9-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-115"><a href="#cb9-115" aria-hidden="true" tabindex="-1"></a>We have reduced the model deviance again (from <span class="in">`r round(mod_year1$deviance, 1)`</span> to <span class="in">`r round(mod_year2$deviance, 1)`</span>), but this is not statistically signifiant (P = <span class="in">`r round(p_2_1, 2)`</span>) given the use of one additional parameter.</span>
+<span id="cb9-116"><a href="#cb9-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-117"><a href="#cb9-117" aria-hidden="true" tabindex="-1"></a><span class="fu">### Joinpoint / segmented model</span></span>
+<span id="cb9-118"><a href="#cb9-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-119"><a href="#cb9-119" aria-hidden="true" tabindex="-1"></a>A joinpoint or segmented model tests the idea that the trend in shrinkflation changed at some single point in time. The model estimates the timing of this joinpoint, and reveals the shrinkflation before and after this point.<span class="co">[</span><span class="ot">3, 4</span><span class="co">]</span> Since we have only 11 datapoints, we will model the presence of just one joinpoint, at time $J$.</span>
+<span id="cb9-120"><a href="#cb9-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-121"><a href="#cb9-121" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb9-122"><a href="#cb9-122" aria-hidden="true" tabindex="-1"></a>\begin{equation}</span>
+<span id="cb9-123"><a href="#cb9-123" aria-hidden="true" tabindex="-1"></a>\log(\lambda) =</span>
+<span id="cb9-124"><a href="#cb9-124" aria-hidden="true" tabindex="-1"></a>    \begin{cases}</span>
+<span id="cb9-125"><a href="#cb9-125" aria-hidden="true" tabindex="-1"></a>        \beta_0 + \beta_1(Year - 2020), &amp; \text{if } Year - 2020 &lt; J <span class="sc">\\\\</span></span>
+<span id="cb9-126"><a href="#cb9-126" aria-hidden="true" tabindex="-1"></a>        \beta_0 + \beta_1(Year - 2020) + \beta_2(Year - 2020 - J), &amp; \text{otherwise}</span>
+<span id="cb9-127"><a href="#cb9-127" aria-hidden="true" tabindex="-1"></a>    \end{cases}</span>
+<span id="cb9-128"><a href="#cb9-128" aria-hidden="true" tabindex="-1"></a>\end{equation}</span>
+<span id="cb9-129"><a href="#cb9-129" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb9-130"><a href="#cb9-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-131"><a href="#cb9-131" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit segmented Poisson regression on time</span></span>
-<span id="cb9-132"><a href="#cb9-132" aria-hidden="true" tabindex="-1"></a><span class="co"># psi is an initial guess for the joinpoint (e.g., median time)</span></span>
-<span id="cb9-133"><a href="#cb9-133" aria-hidden="true" tabindex="-1"></a>mod_seg <span class="ot">&lt;-</span> <span class="fu">segmented</span>(mod_year1,</span>
-<span id="cb9-134"><a href="#cb9-134" aria-hidden="true" tabindex="-1"></a>                     <span class="at">seg.Z =</span> <span class="sc">~</span> cyears1,</span>
-<span id="cb9-135"><a href="#cb9-135" aria-hidden="true" tabindex="-1"></a>                     <span class="at">psi   =</span> <span class="fu">median</span>(ds<span class="sc">$</span>cyears1))</span>
-<span id="cb9-136"><a href="#cb9-136" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-137"><a href="#cb9-137" aria-hidden="true" tabindex="-1"></a><span class="co"># P-value for improvement in model fit</span></span>
-<span id="cb9-138"><a href="#cb9-138" aria-hidden="true" tabindex="-1"></a>anova_seg_1 <span class="ot">&lt;-</span> <span class="fu">anova</span>(mod_seg, mod_year1)</span>
-<span id="cb9-139"><a href="#cb9-139" aria-hidden="true" tabindex="-1"></a>p_seg_1 <span class="ot">&lt;-</span> anova_seg_1<span class="sc">$</span><span class="st">`</span><span class="at">Pr(&gt;Chi)</span><span class="st">`</span>[<span class="dv">2</span>]</span>
-<span id="cb9-140"><a href="#cb9-140" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-141"><a href="#cb9-141" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-142"><a href="#cb9-142" aria-hidden="true" tabindex="-1"></a>Compared to the linear model, we have reduced the model deviance again (from <span class="in">`r round(mod_year1$deviance, 1)`</span> to <span class="in">`r round(mod_seg$deviance, 1)`</span>), but this is also not statistically signifiant (P = <span class="in">`r round(p_seg_1, 2)`</span>) given the use of two additional parameters.</span>
+<span id="cb9-131"><a href="#cb9-131" aria-hidden="true" tabindex="-1"></a><span class="in">```{r segement}</span></span>
+<span id="cb9-132"><a href="#cb9-132" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(segmented)</span>
+<span id="cb9-133"><a href="#cb9-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-134"><a href="#cb9-134" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit segmented Poisson regression on time</span></span>
+<span id="cb9-135"><a href="#cb9-135" aria-hidden="true" tabindex="-1"></a><span class="co"># psi is an initial guess for the joinpoint (e.g., median time)</span></span>
+<span id="cb9-136"><a href="#cb9-136" aria-hidden="true" tabindex="-1"></a>mod_seg <span class="ot">&lt;-</span> <span class="fu">segmented</span>(mod_year1,</span>
+<span id="cb9-137"><a href="#cb9-137" aria-hidden="true" tabindex="-1"></a>                     <span class="at">seg.Z =</span> <span class="sc">~</span> cyears1,</span>
+<span id="cb9-138"><a href="#cb9-138" aria-hidden="true" tabindex="-1"></a>                     <span class="at">psi   =</span> <span class="fu">median</span>(ds<span class="sc">$</span>cyears1))</span>
+<span id="cb9-139"><a href="#cb9-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-140"><a href="#cb9-140" aria-hidden="true" tabindex="-1"></a><span class="co"># P-value for improvement in model fit</span></span>
+<span id="cb9-141"><a href="#cb9-141" aria-hidden="true" tabindex="-1"></a>anova_seg_1 <span class="ot">&lt;-</span> <span class="fu">anova</span>(mod_seg, mod_year1)</span>
+<span id="cb9-142"><a href="#cb9-142" aria-hidden="true" tabindex="-1"></a>p_seg_1 <span class="ot">&lt;-</span> anova_seg_1<span class="sc">$</span><span class="st">`</span><span class="at">Pr(&gt;Chi)</span><span class="st">`</span>[<span class="dv">2</span>]</span>
 <span id="cb9-143"><a href="#cb9-143" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-144"><a href="#cb9-144" aria-hidden="true" tabindex="-1"></a><span class="fu">## Predictions</span></span>
-<span id="cb9-145"><a href="#cb9-145" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-146"><a href="#cb9-146" aria-hidden="true" tabindex="-1"></a>The best-fitting and most efficient model was found to be the Linear model.</span>
-<span id="cb9-147"><a href="#cb9-147" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-148"><a href="#cb9-148" aria-hidden="true" tabindex="-1"></a><span class="in">```{r glin}</span></span>
-<span id="cb9-149"><a href="#cb9-149" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull predictions into a dataset</span></span>
-<span id="cb9-150"><a href="#cb9-150" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb9-151"><a href="#cb9-151" aria-hidden="true" tabindex="-1"></a>    <span class="at">years =</span> <span class="dv">2015</span><span class="sc">:</span><span class="dv">2035</span>,</span>
-<span id="cb9-152"><a href="#cb9-152" aria-hidden="true" tabindex="-1"></a>    <span class="at">act =</span> <span class="fu">c</span>(ds<span class="sc">$</span>chocs, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">10</span>))</span>
-<span id="cb9-153"><a href="#cb9-153" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb9-154"><a href="#cb9-154" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb9-155"><a href="#cb9-155" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Time covariates</span></span>
-<span id="cb9-156"><a href="#cb9-156" aria-hidden="true" tabindex="-1"></a>    <span class="at">cyears1 =</span> years <span class="sc">-</span> <span class="dv">2020</span>,</span>
-<span id="cb9-157"><a href="#cb9-157" aria-hidden="true" tabindex="-1"></a>    <span class="at">cyears2 =</span> cyears1 <span class="sc">^</span> <span class="dv">2</span>,</span>
-<span id="cb9-158"><a href="#cb9-158" aria-hidden="true" tabindex="-1"></a>    <span class="at">jyears1 =</span> <span class="fu">pmax</span>(<span class="dv">0</span>, cyears1 <span class="sc">-</span> mod_seg<span class="sc">$</span>psi[<span class="dv">2</span>]),</span>
-<span id="cb9-159"><a href="#cb9-159" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Model predictions</span></span>
-<span id="cb9-160"><a href="#cb9-160" aria-hidden="true" tabindex="-1"></a>    <span class="at">null =</span> <span class="fu">exp</span>(<span class="fu">coef</span>(mod_null)),</span>
-<span id="cb9-161"><a href="#cb9-161" aria-hidden="true" tabindex="-1"></a>    <span class="at">const =</span> <span class="fu">exp</span>(<span class="fu">coef</span>(mod_year1)[<span class="dv">1</span>] <span class="sc">+</span> cyears1 <span class="sc">*</span> <span class="fu">coef</span>(mod_year1)[<span class="dv">2</span>]),</span>
-<span id="cb9-162"><a href="#cb9-162" aria-hidden="true" tabindex="-1"></a>    <span class="at">accel =</span> <span class="fu">exp</span>(<span class="fu">coef</span>(mod_year2)[<span class="dv">1</span>] <span class="sc">+</span> cyears1 <span class="sc">*</span> <span class="fu">coef</span>(mod_year2)[<span class="dv">2</span>] <span class="sc">+</span> cyears2 <span class="sc">*</span> <span class="fu">coef</span>(mod_year2)[<span class="dv">3</span>]),</span>
-<span id="cb9-163"><a href="#cb9-163" aria-hidden="true" tabindex="-1"></a>    <span class="at">seg =</span> <span class="fu">exp</span>(<span class="fu">coef</span>(mod_seg)[<span class="dv">1</span>] <span class="sc">+</span> cyears1 <span class="sc">*</span> <span class="fu">coef</span>(mod_seg)[<span class="dv">2</span>] <span class="sc">+</span> jyears1 <span class="sc">*</span> <span class="fu">coef</span>(mod_seg)[<span class="dv">3</span>])</span>
-<span id="cb9-164"><a href="#cb9-164" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb9-165"><a href="#cb9-165" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-166"><a href="#cb9-166" aria-hidden="true" tabindex="-1"></a><span class="co"># Color scale</span></span>
-<span id="cb9-167"><a href="#cb9-167" aria-hidden="true" tabindex="-1"></a>colors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Observed"</span> <span class="ot">=</span> <span class="st">"black"</span>, <span class="st">"Linear"</span> <span class="ot">=</span> <span class="st">"darkred"</span>, <span class="st">"Quadratic"</span> <span class="ot">=</span> <span class="st">"darkgreen"</span>, <span class="st">"Joinpoint"</span> <span class="ot">=</span> <span class="st">"blue"</span>)</span>
-<span id="cb9-168"><a href="#cb9-168" aria-hidden="true" tabindex="-1"></a>ncolors <span class="ot">&lt;-</span> <span class="fu">names</span>(colors)</span>
-<span id="cb9-169"><a href="#cb9-169" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-170"><a href="#cb9-170" aria-hidden="true" tabindex="-1"></a><span class="co"># Graphic with just linear model</span></span>
-<span id="cb9-171"><a href="#cb9-171" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(pred, <span class="fu">aes</span>(<span class="at">x=</span>years)) <span class="sc">+</span></span>
-<span id="cb9-172"><a href="#cb9-172" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y=</span>act, <span class="at">color=</span>ncolors[<span class="dv">1</span>])) <span class="sc">+</span></span>
-<span id="cb9-173"><a href="#cb9-173" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y=</span>const, <span class="at">color=</span>ncolors[<span class="dv">2</span>]), <span class="at">linetype=</span><span class="st">"solid"</span>) <span class="sc">+</span></span>
-<span id="cb9-174"><a href="#cb9-174" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb9-175"><a href="#cb9-175" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"The Linear model was best-fitting (shrinkflation of 3.3% per year)"</span>,</span>
-<span id="cb9-176"><a href="#cb9-176" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Legend"</span></span>
-<span id="cb9-177"><a href="#cb9-177" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb9-178"><a href="#cb9-178" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">name =</span> <span class="st">""</span>, <span class="at">values =</span> colors, <span class="at">breaks =</span> ncolors) <span class="sc">+</span></span>
-<span id="cb9-179"><a href="#cb9-179" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">2015</span>, <span class="dv">2035</span>), <span class="at">name =</span> <span class="st">"Year"</span>) <span class="sc">+</span></span>
-<span id="cb9-180"><a href="#cb9-180" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">100</span>), <span class="at">name =</span> <span class="st">"Number of Celebrations in a box"</span>)</span>
-<span id="cb9-181"><a href="#cb9-181" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-182"><a href="#cb9-182" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-183"><a href="#cb9-183" aria-hidden="true" tabindex="-1"></a>However, we can also take a peak at the other models. The Quadratic and Joinpoint models were not the best fitting or most efficent so have dashed rather than solid lines. The predictions of Celebrations per box are markedly lower under these models.</span>
-<span id="cb9-184"><a href="#cb9-184" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-185"><a href="#cb9-185" aria-hidden="true" tabindex="-1"></a><span class="in">```{r gall}</span></span>
-<span id="cb9-186"><a href="#cb9-186" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(pred, <span class="fu">aes</span>(<span class="at">x=</span>years)) <span class="sc">+</span></span>
-<span id="cb9-187"><a href="#cb9-187" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y=</span>act, <span class="at">color=</span>ncolors[<span class="dv">1</span>])) <span class="sc">+</span></span>
-<span id="cb9-188"><a href="#cb9-188" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y=</span>const, <span class="at">color=</span>ncolors[<span class="dv">2</span>]), <span class="at">linetype=</span><span class="st">"solid"</span>) <span class="sc">+</span></span>
-<span id="cb9-189"><a href="#cb9-189" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y=</span>accel, <span class="at">color=</span>ncolors[<span class="dv">3</span>]), <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb9-190"><a href="#cb9-190" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y=</span>seg, <span class="at">color=</span>ncolors[<span class="dv">4</span>]), <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb9-191"><a href="#cb9-191" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb9-192"><a href="#cb9-192" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"All models"</span>,</span>
-<span id="cb9-193"><a href="#cb9-193" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Legend"</span></span>
-<span id="cb9-194"><a href="#cb9-194" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb9-195"><a href="#cb9-195" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">name =</span> <span class="st">""</span>, <span class="at">values =</span> colors, <span class="at">breaks =</span> ncolors) <span class="sc">+</span></span>
-<span id="cb9-196"><a href="#cb9-196" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">2015</span>, <span class="dv">2035</span>), <span class="at">name =</span> <span class="st">"Year"</span>) <span class="sc">+</span></span>
-<span id="cb9-197"><a href="#cb9-197" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">100</span>), <span class="at">name =</span> <span class="st">"Number of Celebrations in a box"</span>)</span>
-<span id="cb9-198"><a href="#cb9-198" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-199"><a href="#cb9-199" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-200"><a href="#cb9-200" aria-hidden="true" tabindex="-1"></a><span class="fu">## What about next year?</span></span>
-<span id="cb9-201"><a href="#cb9-201" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-202"><a href="#cb9-202" aria-hidden="true" tabindex="-1"></a>Now that we have estimated these models, we can make predictions for the number of chocolates Chris will observe in next year's box. Unfortunately, there still seems a lot of uncertainty in each model, and between models.</span>
-<span id="cb9-203"><a href="#cb9-203" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-204"><a href="#cb9-204" aria-hidden="true" tabindex="-1"></a><span class="in">```{r nextyear}</span></span>
-<span id="cb9-205"><a href="#cb9-205" aria-hidden="true" tabindex="-1"></a><span class="co"># Dataset of pdfs by chocolate number</span></span>
-<span id="cb9-206"><a href="#cb9-206" aria-hidden="true" tabindex="-1"></a>nx <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb9-207"><a href="#cb9-207" aria-hidden="true" tabindex="-1"></a>    <span class="at">chocs =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">250</span>,</span>
-<span id="cb9-208"><a href="#cb9-208" aria-hidden="true" tabindex="-1"></a>    <span class="at">cyears1 =</span> <span class="dv">2026-2020</span>,</span>
-<span id="cb9-209"><a href="#cb9-209" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb9-210"><a href="#cb9-210" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
-<span id="cb9-211"><a href="#cb9-211" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Other year calculations</span></span>
-<span id="cb9-212"><a href="#cb9-212" aria-hidden="true" tabindex="-1"></a>        <span class="at">cyears2 =</span> cyears1<span class="sc">^</span><span class="dv">2</span>,</span>
-<span id="cb9-213"><a href="#cb9-213" aria-hidden="true" tabindex="-1"></a>        <span class="at">jyears =</span> <span class="fu">pmax</span>(<span class="dv">0</span>, cyears1 <span class="sc">-</span> mod_seg<span class="sc">$</span>psi[<span class="dv">2</span>]),</span>
-<span id="cb9-214"><a href="#cb9-214" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Calculate log lambda for 2026 for each model</span></span>
-<span id="cb9-215"><a href="#cb9-215" aria-hidden="true" tabindex="-1"></a>        <span class="at">ll_null =</span> <span class="fu">coef</span>(mod_null),</span>
-<span id="cb9-216"><a href="#cb9-216" aria-hidden="true" tabindex="-1"></a>        <span class="at">ll_const =</span> <span class="fu">coef</span>(mod_year1)[<span class="dv">1</span>] <span class="sc">+</span> cyears1 <span class="sc">*</span> <span class="fu">coef</span>(mod_year1)[<span class="dv">2</span>],</span>
-<span id="cb9-217"><a href="#cb9-217" aria-hidden="true" tabindex="-1"></a>        <span class="at">ll_accel =</span> <span class="fu">coef</span>(mod_year2)[<span class="dv">1</span>] <span class="sc">+</span> cyears1 <span class="sc">*</span> <span class="fu">coef</span>(mod_year2)[<span class="dv">2</span>] <span class="sc">+</span> cyears2 <span class="sc">*</span> <span class="fu">coef</span>(mod_year2)[<span class="dv">3</span>],</span>
-<span id="cb9-218"><a href="#cb9-218" aria-hidden="true" tabindex="-1"></a>        <span class="at">ll_seg =</span> <span class="fu">coef</span>(mod_seg)[<span class="dv">1</span>] <span class="sc">+</span> cyears1 <span class="sc">*</span> <span class="fu">coef</span>(mod_seg)[<span class="dv">2</span>] <span class="sc">+</span> jyears <span class="sc">*</span> <span class="fu">coef</span>(mod_seg)[<span class="dv">3</span>],</span>
-<span id="cb9-219"><a href="#cb9-219" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Calculate pdf for each model</span></span>
-<span id="cb9-220"><a href="#cb9-220" aria-hidden="true" tabindex="-1"></a>        <span class="at">f_null =</span> <span class="fu">dpois</span>(chocs, <span class="fu">exp</span>(ll_null)),</span>
-<span id="cb9-221"><a href="#cb9-221" aria-hidden="true" tabindex="-1"></a>        <span class="at">f_Linear =</span> <span class="fu">dpois</span>(chocs, <span class="fu">exp</span>(ll_const)),</span>
-<span id="cb9-222"><a href="#cb9-222" aria-hidden="true" tabindex="-1"></a>        <span class="at">f_Quadratic =</span> <span class="fu">dpois</span>(chocs, <span class="fu">exp</span>(ll_accel)),</span>
-<span id="cb9-223"><a href="#cb9-223" aria-hidden="true" tabindex="-1"></a>        <span class="at">f_Joinpoint =</span> <span class="fu">dpois</span>(chocs, <span class="fu">exp</span>(ll_seg))</span>
-<span id="cb9-224"><a href="#cb9-224" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb9-225"><a href="#cb9-225" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pivot_longer</span>(</span>
-<span id="cb9-226"><a href="#cb9-226" aria-hidden="true" tabindex="-1"></a>        <span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"f_"</span>),</span>
-<span id="cb9-227"><a href="#cb9-227" aria-hidden="true" tabindex="-1"></a>        <span class="at">names_to =</span> <span class="st">"Model"</span>,</span>
-<span id="cb9-228"><a href="#cb9-228" aria-hidden="true" tabindex="-1"></a>        <span class="at">names_prefix =</span> <span class="st">"f_"</span>,</span>
-<span id="cb9-229"><a href="#cb9-229" aria-hidden="true" tabindex="-1"></a>        <span class="at">values_to =</span> <span class="st">"pdf"</span></span>
-<span id="cb9-230"><a href="#cb9-230" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb9-231"><a href="#cb9-231" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(chocs, Model, pdf) <span class="sc">|&gt;</span></span>
-<span id="cb9-232"><a href="#cb9-232" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Remove null model</span></span>
-<span id="cb9-233"><a href="#cb9-233" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(Model<span class="sc">!=</span><span class="st">"null"</span>)</span>
-<span id="cb9-234"><a href="#cb9-234" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-235"><a href="#cb9-235" aria-hidden="true" tabindex="-1"></a><span class="co"># Check that the pdf's sum to 1 (they do)</span></span>
-<span id="cb9-236"><a href="#cb9-236" aria-hidden="true" tabindex="-1"></a><span class="co"># sum(nx$pdf[nx$Model=="Linear"])</span></span>
-<span id="cb9-237"><a href="#cb9-237" aria-hidden="true" tabindex="-1"></a><span class="co"># sum(nx$pdf[nx$Model=="Quadratic"])</span></span>
-<span id="cb9-238"><a href="#cb9-238" aria-hidden="true" tabindex="-1"></a><span class="co"># sum(nx$pdf[nx$Model=="Joinpoint"])</span></span>
-<span id="cb9-239"><a href="#cb9-239" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-240"><a href="#cb9-240" aria-hidden="true" tabindex="-1"></a><span class="co"># Stacked bar chart</span></span>
-<span id="cb9-241"><a href="#cb9-241" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(nx, <span class="fu">aes</span>(<span class="at">x=</span>chocs, <span class="at">y=</span>pdf, <span class="at">fill=</span>Model)) <span class="sc">+</span></span>
-<span id="cb9-242"><a href="#cb9-242" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
-<span id="cb9-243"><a href="#cb9-243" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">40</span>, <span class="dv">70</span>), <span class="at">name =</span> <span class="st">"Number of chocolates in a box"</span>) <span class="sc">+</span></span>
-<span id="cb9-244"><a href="#cb9-244" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
-<span id="cb9-245"><a href="#cb9-245" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">"Next year's count"</span>,</span>
-<span id="cb9-246"><a href="#cb9-246" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Probability density"</span></span>
-<span id="cb9-247"><a href="#cb9-247" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb9-248"><a href="#cb9-248" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-249"><a href="#cb9-249" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-250"><a href="#cb9-250" aria-hidden="true" tabindex="-1"></a><span class="fu">## Discussion</span></span>
-<span id="cb9-251"><a href="#cb9-251" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-252"><a href="#cb9-252" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>We fitted a range of statistical models to explain and predict the number of Celebrations chocolates in a box.</span>
-<span id="cb9-253"><a href="#cb9-253" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The best-fitting statistical model was the Linear model, in which shrinkflation was estimated as 3.3% per year.</span>
-<span id="cb9-254"><a href="#cb9-254" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>There was limited data (only one box per year) and more sophisticated models did not provide statistically signficant improvements to model fit.</span>
-<span id="cb9-255"><a href="#cb9-255" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Both the Quadratic and Joinpoint models provided predictions that were substantially lower than the Linear model.</span>
-<span id="cb9-256"><a href="#cb9-256" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Unfortunately we can't make very precise predictions of next year's count.</span>
+<span id="cb9-144"><a href="#cb9-144" aria-hidden="true" tabindex="-1"></a><span class="co"># Interpretation</span></span>
+<span id="cb9-145"><a href="#cb9-145" aria-hidden="true" tabindex="-1"></a>seg_infl1 <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">100</span> <span class="sc">*</span> (<span class="fu">exp</span>(<span class="fu">coefficients</span>(mod_seg)[<span class="dv">2</span>]) <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb9-146"><a href="#cb9-146" aria-hidden="true" tabindex="-1"></a>seg_infl2 <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">100</span> <span class="sc">*</span> (<span class="fu">exp</span>(<span class="fu">coefficients</span>(mod_seg)[<span class="dv">2</span>] <span class="sc">+</span> <span class="fu">coefficients</span>(mod_seg)[<span class="dv">3</span>]) <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb9-147"><a href="#cb9-147" aria-hidden="true" tabindex="-1"></a>mod_seg_change <span class="ot">&lt;-</span> mod_seg<span class="sc">$</span>psi[<span class="dv">2</span>]<span class="sc">+</span><span class="dv">2020</span> <span class="co"># is mid 2022</span></span>
+<span id="cb9-148"><a href="#cb9-148" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-149"><a href="#cb9-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-150"><a href="#cb9-150" aria-hidden="true" tabindex="-1"></a>Compared to the linear model, we have reduced the model deviance again (from <span class="in">`r round(mod_year1$deviance, 1)`</span> to <span class="in">`r round(mod_seg$deviance, 1)`</span>). It implies that shrinkflation increased from <span class="in">`r round(seg_infl1, 1)`</span>% per year before mid-2023 to <span class="in">`r round(seg_infl2, 1)`</span>% per year after that point. However this model does not provide statistically significant improvement in fit (P = <span class="in">`r round(p_seg_1, 2)`</span>) given the use of two additional parameters.</span>
+<span id="cb9-151"><a href="#cb9-151" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-152"><a href="#cb9-152" aria-hidden="true" tabindex="-1"></a><span class="fu">## Predictions</span></span>
+<span id="cb9-153"><a href="#cb9-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-154"><a href="#cb9-154" aria-hidden="true" tabindex="-1"></a>The best-fitting and most efficient model was found to be the Linear model.</span>
+<span id="cb9-155"><a href="#cb9-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-156"><a href="#cb9-156" aria-hidden="true" tabindex="-1"></a><span class="in">```{r glin}</span></span>
+<span id="cb9-157"><a href="#cb9-157" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull predictions into a dataset</span></span>
+<span id="cb9-158"><a href="#cb9-158" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb9-159"><a href="#cb9-159" aria-hidden="true" tabindex="-1"></a>    <span class="at">years =</span> <span class="dv">2015</span><span class="sc">:</span><span class="dv">2035</span>,</span>
+<span id="cb9-160"><a href="#cb9-160" aria-hidden="true" tabindex="-1"></a>    <span class="at">act =</span> <span class="fu">c</span>(ds<span class="sc">$</span>chocs, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">10</span>))</span>
+<span id="cb9-161"><a href="#cb9-161" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb9-162"><a href="#cb9-162" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb9-163"><a href="#cb9-163" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Time covariates</span></span>
+<span id="cb9-164"><a href="#cb9-164" aria-hidden="true" tabindex="-1"></a>    <span class="at">cyears1 =</span> years <span class="sc">-</span> <span class="dv">2020</span>,</span>
+<span id="cb9-165"><a href="#cb9-165" aria-hidden="true" tabindex="-1"></a>    <span class="at">cyears2 =</span> cyears1 <span class="sc">^</span> <span class="dv">2</span>,</span>
+<span id="cb9-166"><a href="#cb9-166" aria-hidden="true" tabindex="-1"></a>    <span class="at">jyears1 =</span> <span class="fu">pmax</span>(<span class="dv">0</span>, cyears1 <span class="sc">-</span> mod_seg<span class="sc">$</span>psi[<span class="dv">2</span>]),</span>
+<span id="cb9-167"><a href="#cb9-167" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Model predictions</span></span>
+<span id="cb9-168"><a href="#cb9-168" aria-hidden="true" tabindex="-1"></a>    <span class="at">null =</span> <span class="fu">exp</span>(<span class="fu">coef</span>(mod_null)),</span>
+<span id="cb9-169"><a href="#cb9-169" aria-hidden="true" tabindex="-1"></a>    <span class="at">const =</span> <span class="fu">exp</span>(<span class="fu">coef</span>(mod_year1)[<span class="dv">1</span>] <span class="sc">+</span> cyears1 <span class="sc">*</span> <span class="fu">coef</span>(mod_year1)[<span class="dv">2</span>]),</span>
+<span id="cb9-170"><a href="#cb9-170" aria-hidden="true" tabindex="-1"></a>    <span class="at">accel =</span> <span class="fu">exp</span>(<span class="fu">coef</span>(mod_year2)[<span class="dv">1</span>] <span class="sc">+</span> cyears1 <span class="sc">*</span> <span class="fu">coef</span>(mod_year2)[<span class="dv">2</span>] <span class="sc">+</span> cyears2 <span class="sc">*</span> <span class="fu">coef</span>(mod_year2)[<span class="dv">3</span>]),</span>
+<span id="cb9-171"><a href="#cb9-171" aria-hidden="true" tabindex="-1"></a>    <span class="at">seg =</span> <span class="fu">exp</span>(<span class="fu">coef</span>(mod_seg)[<span class="dv">1</span>] <span class="sc">+</span> cyears1 <span class="sc">*</span> <span class="fu">coef</span>(mod_seg)[<span class="dv">2</span>] <span class="sc">+</span> jyears1 <span class="sc">*</span> <span class="fu">coef</span>(mod_seg)[<span class="dv">3</span>])</span>
+<span id="cb9-172"><a href="#cb9-172" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-173"><a href="#cb9-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-174"><a href="#cb9-174" aria-hidden="true" tabindex="-1"></a><span class="co"># Color scale</span></span>
+<span id="cb9-175"><a href="#cb9-175" aria-hidden="true" tabindex="-1"></a>colors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Observed"</span> <span class="ot">=</span> <span class="st">"black"</span>, <span class="st">"Linear"</span> <span class="ot">=</span> <span class="st">"darkred"</span>, <span class="st">"Quadratic"</span> <span class="ot">=</span> <span class="st">"darkgreen"</span>, <span class="st">"Joinpoint"</span> <span class="ot">=</span> <span class="st">"blue"</span>)</span>
+<span id="cb9-176"><a href="#cb9-176" aria-hidden="true" tabindex="-1"></a>ncolors <span class="ot">&lt;-</span> <span class="fu">names</span>(colors)</span>
+<span id="cb9-177"><a href="#cb9-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-178"><a href="#cb9-178" aria-hidden="true" tabindex="-1"></a><span class="co"># Graphic with just linear model</span></span>
+<span id="cb9-179"><a href="#cb9-179" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(pred, <span class="fu">aes</span>(<span class="at">x=</span>years)) <span class="sc">+</span></span>
+<span id="cb9-180"><a href="#cb9-180" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y=</span>act, <span class="at">color=</span>ncolors[<span class="dv">1</span>])) <span class="sc">+</span></span>
+<span id="cb9-181"><a href="#cb9-181" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y=</span>const, <span class="at">color=</span>ncolors[<span class="dv">2</span>]), <span class="at">linetype=</span><span class="st">"solid"</span>) <span class="sc">+</span></span>
+<span id="cb9-182"><a href="#cb9-182" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb9-183"><a href="#cb9-183" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">"The Linear model was best-fitting (shrinkflation of "</span>, <span class="fu">round</span>(shrink_year1, <span class="dv">1</span>), <span class="st">"% per year)"</span>),</span>
+<span id="cb9-184"><a href="#cb9-184" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Legend"</span></span>
+<span id="cb9-185"><a href="#cb9-185" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb9-186"><a href="#cb9-186" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">name =</span> <span class="st">""</span>, <span class="at">values =</span> colors, <span class="at">breaks =</span> ncolors) <span class="sc">+</span></span>
+<span id="cb9-187"><a href="#cb9-187" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">2015</span>, <span class="dv">2035</span>), <span class="at">name =</span> <span class="st">"Year"</span>) <span class="sc">+</span></span>
+<span id="cb9-188"><a href="#cb9-188" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">100</span>), <span class="at">name =</span> <span class="st">"Number of Celebrations in a box"</span>)</span>
+<span id="cb9-189"><a href="#cb9-189" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-190"><a href="#cb9-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-191"><a href="#cb9-191" aria-hidden="true" tabindex="-1"></a>However, we can also take a peak at the other models. The Quadratic and Joinpoint models were not the best fitting or most efficent so have dashed rather than solid lines. The predictions of Celebrations per box are markedly lower under these models.</span>
+<span id="cb9-192"><a href="#cb9-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-193"><a href="#cb9-193" aria-hidden="true" tabindex="-1"></a><span class="in">```{r gall}</span></span>
+<span id="cb9-194"><a href="#cb9-194" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(pred, <span class="fu">aes</span>(<span class="at">x=</span>years)) <span class="sc">+</span></span>
+<span id="cb9-195"><a href="#cb9-195" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y=</span>act, <span class="at">color=</span>ncolors[<span class="dv">1</span>])) <span class="sc">+</span></span>
+<span id="cb9-196"><a href="#cb9-196" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y=</span>const, <span class="at">color=</span>ncolors[<span class="dv">2</span>]), <span class="at">linetype=</span><span class="st">"solid"</span>) <span class="sc">+</span></span>
+<span id="cb9-197"><a href="#cb9-197" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y=</span>accel, <span class="at">color=</span>ncolors[<span class="dv">3</span>]), <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb9-198"><a href="#cb9-198" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y=</span>seg, <span class="at">color=</span>ncolors[<span class="dv">4</span>]), <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb9-199"><a href="#cb9-199" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb9-200"><a href="#cb9-200" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"All models"</span>,</span>
+<span id="cb9-201"><a href="#cb9-201" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Legend"</span></span>
+<span id="cb9-202"><a href="#cb9-202" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb9-203"><a href="#cb9-203" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">name =</span> <span class="st">""</span>, <span class="at">values =</span> colors, <span class="at">breaks =</span> ncolors) <span class="sc">+</span></span>
+<span id="cb9-204"><a href="#cb9-204" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">2015</span>, <span class="dv">2035</span>), <span class="at">name =</span> <span class="st">"Year"</span>) <span class="sc">+</span></span>
+<span id="cb9-205"><a href="#cb9-205" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">100</span>), <span class="at">name =</span> <span class="st">"Number of Celebrations in a box"</span>)</span>
+<span id="cb9-206"><a href="#cb9-206" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-207"><a href="#cb9-207" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-208"><a href="#cb9-208" aria-hidden="true" tabindex="-1"></a><span class="fu">## What about next year?</span></span>
+<span id="cb9-209"><a href="#cb9-209" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-210"><a href="#cb9-210" aria-hidden="true" tabindex="-1"></a>Now that we have estimated these models, we can make predictions for the number of chocolates Chris will observe in next year's box. Unfortunately, there still seems a lot of uncertainty in each model, and between models. The number of chocolates in a box is probably unlikely to be a genuine Poisson process, due to quality control around the allowable range of chocolates in a box, so the precision in the statistical models that ignore this may be understated.</span>
+<span id="cb9-211"><a href="#cb9-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-212"><a href="#cb9-212" aria-hidden="true" tabindex="-1"></a><span class="in">```{r nextyear}</span></span>
+<span id="cb9-213"><a href="#cb9-213" aria-hidden="true" tabindex="-1"></a><span class="co"># Dataset of pdfs by chocolate number</span></span>
+<span id="cb9-214"><a href="#cb9-214" aria-hidden="true" tabindex="-1"></a>nx <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb9-215"><a href="#cb9-215" aria-hidden="true" tabindex="-1"></a>    <span class="at">chocs =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">250</span>,</span>
+<span id="cb9-216"><a href="#cb9-216" aria-hidden="true" tabindex="-1"></a>    <span class="at">cyears1 =</span> <span class="dv">2026-2020</span>,</span>
+<span id="cb9-217"><a href="#cb9-217" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb9-218"><a href="#cb9-218" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb9-219"><a href="#cb9-219" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Other year calculations</span></span>
+<span id="cb9-220"><a href="#cb9-220" aria-hidden="true" tabindex="-1"></a>        <span class="at">cyears2 =</span> cyears1<span class="sc">^</span><span class="dv">2</span>,</span>
+<span id="cb9-221"><a href="#cb9-221" aria-hidden="true" tabindex="-1"></a>        <span class="at">jyears =</span> <span class="fu">pmax</span>(<span class="dv">0</span>, cyears1 <span class="sc">-</span> mod_seg<span class="sc">$</span>psi[<span class="dv">2</span>]),</span>
+<span id="cb9-222"><a href="#cb9-222" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Calculate log lambda for 2026 for each model</span></span>
+<span id="cb9-223"><a href="#cb9-223" aria-hidden="true" tabindex="-1"></a>        <span class="at">ll_null =</span> <span class="fu">coef</span>(mod_null),</span>
+<span id="cb9-224"><a href="#cb9-224" aria-hidden="true" tabindex="-1"></a>        <span class="at">ll_const =</span> <span class="fu">coef</span>(mod_year1)[<span class="dv">1</span>] <span class="sc">+</span> cyears1 <span class="sc">*</span> <span class="fu">coef</span>(mod_year1)[<span class="dv">2</span>],</span>
+<span id="cb9-225"><a href="#cb9-225" aria-hidden="true" tabindex="-1"></a>        <span class="at">ll_accel =</span> <span class="fu">coef</span>(mod_year2)[<span class="dv">1</span>] <span class="sc">+</span> cyears1 <span class="sc">*</span> <span class="fu">coef</span>(mod_year2)[<span class="dv">2</span>] <span class="sc">+</span> cyears2 <span class="sc">*</span> <span class="fu">coef</span>(mod_year2)[<span class="dv">3</span>],</span>
+<span id="cb9-226"><a href="#cb9-226" aria-hidden="true" tabindex="-1"></a>        <span class="at">ll_seg =</span> <span class="fu">coef</span>(mod_seg)[<span class="dv">1</span>] <span class="sc">+</span> cyears1 <span class="sc">*</span> <span class="fu">coef</span>(mod_seg)[<span class="dv">2</span>] <span class="sc">+</span> jyears <span class="sc">*</span> <span class="fu">coef</span>(mod_seg)[<span class="dv">3</span>],</span>
+<span id="cb9-227"><a href="#cb9-227" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Calculate pdf for each model</span></span>
+<span id="cb9-228"><a href="#cb9-228" aria-hidden="true" tabindex="-1"></a>        <span class="at">f_null =</span> <span class="fu">dpois</span>(chocs, <span class="fu">exp</span>(ll_null)),</span>
+<span id="cb9-229"><a href="#cb9-229" aria-hidden="true" tabindex="-1"></a>        <span class="at">f_Linear =</span> <span class="fu">dpois</span>(chocs, <span class="fu">exp</span>(ll_const)),</span>
+<span id="cb9-230"><a href="#cb9-230" aria-hidden="true" tabindex="-1"></a>        <span class="at">f_Quadratic =</span> <span class="fu">dpois</span>(chocs, <span class="fu">exp</span>(ll_accel)),</span>
+<span id="cb9-231"><a href="#cb9-231" aria-hidden="true" tabindex="-1"></a>        <span class="at">f_Joinpoint =</span> <span class="fu">dpois</span>(chocs, <span class="fu">exp</span>(ll_seg))</span>
+<span id="cb9-232"><a href="#cb9-232" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb9-233"><a href="#cb9-233" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pivot_longer</span>(</span>
+<span id="cb9-234"><a href="#cb9-234" aria-hidden="true" tabindex="-1"></a>        <span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"f_"</span>),</span>
+<span id="cb9-235"><a href="#cb9-235" aria-hidden="true" tabindex="-1"></a>        <span class="at">names_to =</span> <span class="st">"Model"</span>,</span>
+<span id="cb9-236"><a href="#cb9-236" aria-hidden="true" tabindex="-1"></a>        <span class="at">names_prefix =</span> <span class="st">"f_"</span>,</span>
+<span id="cb9-237"><a href="#cb9-237" aria-hidden="true" tabindex="-1"></a>        <span class="at">values_to =</span> <span class="st">"pdf"</span></span>
+<span id="cb9-238"><a href="#cb9-238" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb9-239"><a href="#cb9-239" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(chocs, Model, pdf) <span class="sc">|&gt;</span></span>
+<span id="cb9-240"><a href="#cb9-240" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Remove null model</span></span>
+<span id="cb9-241"><a href="#cb9-241" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(Model<span class="sc">!=</span><span class="st">"null"</span>)</span>
+<span id="cb9-242"><a href="#cb9-242" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-243"><a href="#cb9-243" aria-hidden="true" tabindex="-1"></a><span class="co"># Check that the pdf's sum to 1 (they do)</span></span>
+<span id="cb9-244"><a href="#cb9-244" aria-hidden="true" tabindex="-1"></a><span class="co"># sum(nx$pdf[nx$Model=="Linear"])</span></span>
+<span id="cb9-245"><a href="#cb9-245" aria-hidden="true" tabindex="-1"></a><span class="co"># sum(nx$pdf[nx$Model=="Quadratic"])</span></span>
+<span id="cb9-246"><a href="#cb9-246" aria-hidden="true" tabindex="-1"></a><span class="co"># sum(nx$pdf[nx$Model=="Joinpoint"])</span></span>
+<span id="cb9-247"><a href="#cb9-247" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-248"><a href="#cb9-248" aria-hidden="true" tabindex="-1"></a><span class="co"># Stacked bar chart</span></span>
+<span id="cb9-249"><a href="#cb9-249" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(nx, <span class="fu">aes</span>(<span class="at">x=</span>chocs, <span class="at">y=</span>pdf, <span class="at">fill=</span>Model)) <span class="sc">+</span></span>
+<span id="cb9-250"><a href="#cb9-250" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb9-251"><a href="#cb9-251" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">40</span>, <span class="dv">70</span>), <span class="at">name =</span> <span class="st">"Number of chocolates in a box"</span>) <span class="sc">+</span></span>
+<span id="cb9-252"><a href="#cb9-252" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb9-253"><a href="#cb9-253" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">"Next year's count"</span>,</span>
+<span id="cb9-254"><a href="#cb9-254" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Probability density"</span></span>
+<span id="cb9-255"><a href="#cb9-255" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-256"><a href="#cb9-256" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb9-257"><a href="#cb9-257" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-258"><a href="#cb9-258" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-259"><a href="#cb9-259" aria-hidden="true" tabindex="-1"></a><span class="fu">## References</span></span>
-<span id="cb9-260"><a href="#cb9-260" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-261"><a href="#cb9-261" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Wikipedia. Poisson regression. <span class="co">[</span><span class="ot">https://en.wikipedia.org/wiki/Poisson_regression</span><span class="co">](https://en.wikipedia.org/wiki/Poisson_regression)</span></span>
-<span id="cb9-262"><a href="#cb9-262" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Wikipedia. Shrinkflation. <span class="co">[</span><span class="ot">https://en.wikipedia.org/wiki/Shrinkflation</span><span class="co">](https://en.wikipedia.org/wiki/Shrinkflation)</span></span>
-<span id="cb9-263"><a href="#cb9-263" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Muggeo VMR (2003). Estimating regression models with unknown break-points. Statistics in Medicine, 22, 3055-3071. <span class="co">[</span><span class="ot">DOI: 10.1002/sim.1545</span><span class="co">](https://onlinelibrary.wiley.com/doi/10.1002/sim.1545)</span></span>
-<span id="cb9-264"><a href="#cb9-264" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Muggeo VMR (2008). segmented: an R Package to Fit Regression Models with Broken-Line Relationships. R News, 8/1, 20-25. <span class="co">[</span><span class="ot">https://journal.r-project.org/articles/RN-2008-004/RN-2008-004.pdf</span><span class="co">](https://journal.r-project.org/articles/RN-2008-004/RN-2008-004.pdf)</span></span>
-<span id="cb9-265"><a href="#cb9-265" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-266"><a href="#cb9-266" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb9-258"><a href="#cb9-258" aria-hidden="true" tabindex="-1"></a><span class="fu">## Discussion</span></span>
+<span id="cb9-259"><a href="#cb9-259" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-260"><a href="#cb9-260" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>We fitted a range of statistical models to explain and predict the number of Celebrations chocolates in a box.</span>
+<span id="cb9-261"><a href="#cb9-261" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The best-fitting statistical model was the Linear model, in which shrinkflation was estimated as <span class="in">`r round(shrink_year1,1)`</span>% per year.</span>
+<span id="cb9-262"><a href="#cb9-262" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>There was limited data (only one box per year) and more sophisticated models did not provide statistically signficant improvements to model fit.</span>
+<span id="cb9-263"><a href="#cb9-263" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>The Joinpoint model implies that the rate of shrinkflation quadrupled since mid-2023, from <span class="in">`r round(seg_infl1,1)`</span>% to <span class="in">`r round(seg_infl2,1)`</span>% per year. This would be shocking, but hopefully just a chance finding (P=<span class="in">`r round(p_seg_1, 2)`</span>).</span>
+<span id="cb9-264"><a href="#cb9-264" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>This is also not really a Poisson process due to likely quality control constraints on the range of chocolates allowed in any box.</span>
+<span id="cb9-265"><a href="#cb9-265" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Nevertheless, both the Quadratic and Joinpoint models provided predictions that were substantially lower than the Linear model.</span>
+<span id="cb9-266"><a href="#cb9-266" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Unfortunately we can't make very precise predictions of next year's count.</span>
+<span id="cb9-267"><a href="#cb9-267" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-268"><a href="#cb9-268" aria-hidden="true" tabindex="-1"></a><span class="fu">## References</span></span>
+<span id="cb9-269"><a href="#cb9-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-270"><a href="#cb9-270" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Wikipedia. Poisson regression. <span class="co">[</span><span class="ot">https://en.wikipedia.org/wiki/Poisson_regression</span><span class="co">](https://en.wikipedia.org/wiki/Poisson_regression)</span></span>
+<span id="cb9-271"><a href="#cb9-271" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Wikipedia. Shrinkflation. <span class="co">[</span><span class="ot">https://en.wikipedia.org/wiki/Shrinkflation</span><span class="co">](https://en.wikipedia.org/wiki/Shrinkflation)</span></span>
+<span id="cb9-272"><a href="#cb9-272" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Muggeo VMR (2003). Estimating regression models with unknown break-points. Statistics in Medicine, 22, 3055-3071. <span class="co">[</span><span class="ot">DOI: 10.1002/sim.1545</span><span class="co">](https://onlinelibrary.wiley.com/doi/10.1002/sim.1545)</span></span>
+<span id="cb9-273"><a href="#cb9-273" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Muggeo VMR (2008). segmented: an R Package to Fit Regression Models with Broken-Line Relationships. R News, 8/1, 20-25. <span class="co">[</span><span class="ot">https://journal.r-project.org/articles/RN-2008-004/RN-2008-004.pdf</span><span class="co">](https://journal.r-project.org/articles/RN-2008-004/RN-2008-004.pdf)</span></span>
+<span id="cb9-274"><a href="#cb9-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-275"><a href="#cb9-275" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 
